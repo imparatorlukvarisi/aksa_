@@ -1,138 +1,546 @@
-# aksa_
-{
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aksa Bilinci | Kudüs'e Adım Adım</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Amiri (Arapça/Osmanlıca hat estetiği için) -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tone.js (Ses efektleri ve manevi atmosfer sentezi için) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #12100e;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(180, 130, 50, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(20, 83, 45, 0.12) 0%, transparent 50%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 2px, transparent 2px, transparent 10px);
+            color: #f3ead8;
+        }
+        .font-amiri {
+            font-family: 'Amiri', serif;
+        }
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+        .stone-card {
+            background: linear-gradient(145deg, #1d1915 0%, #15120f 100%);
+            border: 1px solid rgba(217, 169, 91, 0.25);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 235, 190, 0.08);
+        }
+        .parchment-box {
+            background: linear-gradient(180deg, #27211a 0%, #1d1813 100%);
+            border: 1px solid rgba(217, 169, 91, 0.35);
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6);
+        }
+        .keffiyeh-border {
+            background-image: repeating-linear-gradient(
+                90deg,
+                #d97706 0px, #d97706 4px,
+                transparent 4px, transparent 8px,
+                #15803d 8px, #15803d 12px,
+                transparent 12px, transparent 16px,
+                #b91c1c 16px, #b91c1c 20px,
+                transparent 20px, transparent 24px
+            );
+            height: 3px;
+            opacity: 0.75;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #12100e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #44382c;
+            border-radius: 3px;
+        }
+        @keyframes pulseGold {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.4)); }
+            50% { filter: drop-shadow(0 0 22px rgba(234, 179, 8, 0.9)); }
+        }
+        .dome-glow {
+            animation: pulseGold 3.5s infinite ease-in-out;
+        }
+        @keyframes mapPing {
+            0% { transform: scale(1); opacity: 0.9; }
+            70% { transform: scale(1.9); opacity: 0; }
+            100% { transform: scale(1.9); opacity: 0; }
+        }
+        .map-pulse {
+            transform-origin: center;
+            transform-box: fill-box;
+            animation: mapPing 2.2s infinite ease-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.9; }
+        }
+        .star {
+            animation: twinkle 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
+
+<!-- Toast Mesaj Kutusu -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Üst HUD -->
+<header class="bg-[#171411]/95 backdrop-blur-md border-b border-amber-500/25 sticky top-0 z-40">
+    <div class="keffiyeh-border w-full"></div>
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        
+        <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/20 to-emerald-900/30 border border-amber-500/40 flex items-center justify-center dome-glow">
+                <svg class="w-6 h-6 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C11.5 2 11 2.5 11 3.2V4.1C7.6 4.6 5 7.5 5 11V13H19V11C19 7.5 16.4 4.6 13 4.1V3.2C13 2.5 12.5 2 12 2ZM4 14V16H20V14H4ZM3 17V21H9V18C9 17.4 9.4 17 10 17H14C14.6 17 15 17.4 15 18V21H21V17H3Z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-cinzel font-bold text-base sm:text-lg tracking-wider text-amber-300 flex items-center gap-2">
+                    BEYTÜ'L-MAKDİS 
+                    <span id="user-rank-badge" class="font-sans text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-500/40">Aksa Talebesi</span>
+                </h1>
+                <p class="text-[11px] text-stone-400">180 Günlük Kudüs Tarih & Strateji Seferi</p>
+            </div>
+        </div>
+
+        <!-- 3 OYUN KAYNAĞI -->
+        <div class="flex items-center gap-2 sm:gap-3 bg-black/40 px-3 py-1.5 rounded-xl border border-amber-500/20">
+            <div class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-950/60 border border-emerald-600/30" title="Maneviyat Gücü">
+                <span class="text-sm">🕌</span>
+                <div>
+                    <div class="text-[9px] uppercase text-emerald-400 font-bold">Maneviyat</div>
+                    <div id="stat-spirit" class="text-xs font-extrabold text-white">30</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-950/60 border border-amber-600/30" title="Hafıza">
+                <span class="text-sm">📜</span>
+                <div>
+                    <div class="text-[9px] uppercase text-amber-400 font-bold">Hafıza</div>
+                    <div id="stat-lore" class="text-xs font-extrabold text-white">20</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-950/60 border border-red-600/30" title="Direniş">
+                <span class="text-sm">🛡️</span>
+                <div>
+                    <div class="text-[9px] uppercase text-red-400 font-bold">Direniş</div>
+                    <div id="stat-defense" class="text-xs font-extrabold text-white">25</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="text-right">
+                <div class="text-[10px] text-stone-400" id="header-season-label">1. Çağ: Surlar ve Kapılar</div>
+                <div class="text-xs font-bold text-amber-400" id="header-progress-text">Gün 1 / 180 (%1)</div>
+            </div>
+            <button onclick="openRewardModal()" id="header-reward-btn" class="hidden sm:flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-amber-500 text-stone-950 hover:bg-amber-400 transition cursor-pointer shadow-lg shadow-amber-500/20">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14 5H10L12 2ZM6 7H18V11H6V7ZM4 12H20V21H15V16H9V21H4V12Z"/></svg>
+                Aksa'ya Gir
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Çağlar Çubuğu -->
+<div class="bg-[#161310] border-b border-amber-500/15 py-2.5 px-4 overflow-x-auto">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-2 min-w-[700px]" id="seasons-bar"></div>
+</div>
+
+<!-- Ana Oyun Sahnesi -->
+<main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Sol Kolon: Harita -->
+    <div class="lg:col-span-5 flex flex-col gap-5">
+        <section class="stone-card rounded-2xl p-4 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h2 class="font-cinzel text-sm font-bold text-amber-300 flex items-center gap-2">
+                        <span>🧭</span> KUDÜS SURLAR İÇİ HARİTASI
+                    </h2>
+                    <p class="text-[11px] text-stone-400">Bölgelere dokunarak tahkim et ve görev aç</p>
+                </div>
+                <span id="conquered-zones-badge" class="text-[11px] font-bold bg-emerald-950 text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/30">1 / 5 Bölge</span>
+            </div>
+
+            <div class="bg-[#0e0c0a] rounded-xl p-2 border border-amber-500/25 relative">
+                <svg viewBox="0 0 380 245" class="w-full h-auto select-none">
+                    <path d="M 45 45 L 220 35 L 335 55 L 345 195 L 185 215 L 40 185 Z" fill="#1a1612" stroke="#785c32" stroke-width="4" stroke-dasharray="10 3"/>
+                    <path d="M 355 30 Q 375 120 355 220" fill="none" stroke="#14532d" stroke-width="6" opacity="0.5"/>
+                    <text x="364" y="125" fill="#4ade80" font-size="8" transform="rotate(90 364,125)" opacity="0.6">ZEYTİN DAĞI</text>
+                    <path d="M 95 65 L 175 55 L 245 110 L 285 155 L 295 95" fill="none" stroke="#d97706" stroke-width="2.5" stroke-dasharray="4 4" opacity="0.6"/>
+
+                    <!-- Bölge 1 -->
+                    <g onclick="selectMapZone(0)" class="cursor-pointer group">
+                        <circle cx="155" cy="45" r="14" fill="#10b981" opacity="0.2" class="map-pulse"/>
+                        <circle cx="155" cy="45" r="10" fill="#064e3b" stroke="#34d399" stroke-width="2"/>
+                        <text x="155" y="48" text-anchor="middle" fill="#a7f3d0" font-size="9" font-weight="800">I</text>
+                        <text x="155" y="68" text-anchor="middle" fill="#fde68a" font-size="9" font-weight="700">1. Şam Kapısı</text>
+                    </g>
+                    <!-- Bölge 2 -->
+                    <g onclick="selectMapZone(1)" class="cursor-pointer group">
+                        <circle id="zone-ring-1" cx="75" cy="95" r="10" fill="#1c1917" stroke="#d97706" stroke-width="2"/>
+                        <text x="75" y="98" text-anchor="middle" fill="#fde68a" font-size="9" font-weight="800">II</text>
+                        <text x="75" y="118" text-anchor="middle" fill="#e7e5e4" font-size="9" font-weight="600">2. Şeyh Cerrah</text>
+                    </g>
+                    <!-- Bölge 3 -->
+                    <g onclick="selectMapZone(2)" class="cursor-pointer group">
+                        <circle id="zone-ring-2" cx="185" cy="155" r="10" fill="#1c1917" stroke="#d97706" stroke-width="2"/>
+                        <text x="185" y="158" text-anchor="middle" fill="#fde68a" font-size="9" font-weight="800">III</text>
+                        <text x="185" y="178" text-anchor="middle" fill="#e7e5e4" font-size="9" font-weight="600">3. Meğaribe Vakfı</text>
+                    </g>
+                    <!-- Bölge 4 -->
+                    <g onclick="selectMapZone(3)" class="cursor-pointer group">
+                        <circle id="zone-ring-3" cx="285" cy="175" r="11" fill="#1c1917" stroke="#d97706" stroke-width="2"/>
+                        <text x="285" y="178" text-anchor="middle" fill="#fde68a" font-size="9" font-weight="800">IV</text>
+                        <text x="285" y="198" text-anchor="middle" fill="#e7e5e4" font-size="9" font-weight="600">4. Kıble Mescidi</text>
+                    </g>
+                    <!-- Bölge 5 -->
+                    <g onclick="selectMapZone(4)" class="cursor-pointer group">
+                        <circle cx="290" cy="100" r="18" fill="#f59e0b" opacity="0.22" class="map-pulse"/>
+                        <circle id="zone-ring-4" cx="290" cy="100" r="14" fill="#451a03" stroke="#fbbf24" stroke-width="2.5"/>
+                        <text x="290" y="104" text-anchor="middle" fill="#fef08a" font-size="10" font-weight="800">V</text>
+                        <text x="290" y="126" text-anchor="middle" fill="#fbbf24" font-size="9.5" font-weight="800">5. Mescid-i Aksa</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div id="map-zone-detail" class="mt-3 p-3.5 rounded-xl parchment-box flex flex-col gap-2.5">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-wider text-amber-400 font-bold" id="zone-tag">Bölge 1 • Osmanlı Surları (1537)</div>
+                        <div class="text-xs font-bold text-white mt-0.5" id="zone-name">Şam Kapısı (Babü'l-Amud)</div>
+                        <p class="text-[11px] text-stone-300 mt-0.5" id="zone-desc">Kanuni Sultan Süleyman'ın inşa ettirdiği en görkemli sur kapısı.</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <div class="text-[10px] text-stone-400">Bölge Savunması</div>
+                        <div id="zone-defense-pct" class="text-sm font-extrabold text-emerald-400">%100</div>
+                    </div>
+                </div>
+                <div class="w-full h-1.5 bg-stone-900 rounded-full overflow-hidden">
+                    <div id="zone-defense-bar" class="h-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-500" style="width: 100%"></div>
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <button onclick="fortifySelectedZone()" class="flex-1 py-2 px-3 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-emerald-100 font-bold text-[11px] border border-emerald-500/30 transition cursor-pointer">
+                        Tahkim Et (-10 Direniş, +10 Gün)
+                    </button>
+                    <button onclick="deployZoneMission()" class="flex-1 py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-[11px] transition cursor-pointer">
+                        Ferman Görevini Aç
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Sağ Kolon: Sekmeler ve İçerikler -->
+    <div class="lg:col-span-7 flex flex-col gap-5">
+
+        <div class="stone-card p-1.5 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+            <button onclick="switchTab('scenario')" id="tab-scenario" class="py-2.5 px-2 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 shadow transition cursor-pointer">
+                Tarihi Fermanlar
+            </button>
+            <button onclick="switchTab('build')" id="tab-build" class="py-2.5 px-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-amber-200 transition cursor-pointer">
+                Vakıf & Surlar İnşası
+            </button>
+            <button onclick="switchTab('terms')" id="tab-terms" class="py-2.5 px-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-amber-200 transition cursor-pointer">
+                Kudüs Arşivi
+            </button>
+            <button onclick="switchTab('leagues')" id="tab-leagues" class="py-2.5 px-2 rounded-xl text-xs font-semibold text-stone-400 hover:text-amber-200 transition cursor-pointer">
+                Muhafız Sancakları
+            </button>
+        </div>
+
+        <!-- Mod 1: Senaryolar -->
+        <div id="panel-scenario" class="flex flex-col gap-4">
+            <div class="stone-card rounded-2xl p-5 sm:p-6 relative overflow-hidden">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-4 border-b border-amber-500/20">
+                    <div class="flex items-center gap-2.5">
+                        <span id="scenario-year-badge" class="font-cinzel font-extrabold text-sm px-3 py-1 rounded-lg bg-amber-500 text-stone-950 shadow">1516</span>
+                        <div>
+                            <div id="scenario-era" class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Osmanlı Dönemi • Emanet</div>
+                            <h2 id="scenario-title" class="font-cinzel text-base sm:text-lg font-bold text-white">Yavuz Sultan Selim'in Kudüs'e Girişi</h2>
+                        </div>
+                    </div>
+                    <span id="scenario-counter" class="text-xs font-mono text-stone-400 bg-black/40 px-2.5 py-1 rounded-lg border border-stone-800">Görev 1 / 5</span>
+                </div>
+
+                <div class="parchment-box rounded-xl p-4 sm:p-5 mb-5 relative">
+                    <div class="text-[10px] uppercase tracking-widest text-amber-500/70 font-bold mb-1.5">Ferman / Tarihi Durum</div>
+                    <p id="scenario-story" class="text-xs sm:text-sm text-stone-200 leading-relaxed"></p>
+                </div>
+
+                <div class="text-xs font-bold text-amber-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span>⚖️</span> Kararını Ver:
+                </div>
+                <div id="scenario-choices" class="space-y-3"></div>
+
+                <div id="scenario-outcome" class="hidden mt-5 p-4 rounded-xl border text-xs leading-relaxed"></div>
+            </div>
+        </div>
+
+        <!-- Mod 2: İnşaat -->
+        <div id="panel-build" class="hidden flex-col gap-4">
+            <div class="stone-card rounded-2xl p-5 sm:p-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-amber-500/20">
+                    <div>
+                        <h2 class="font-cinzel text-base font-bold text-amber-300">KUDÜS VAKIF VE İHYA STRATEJİSİ</h2>
+                        <p class="text-xs text-stone-400">Kaynaklarınla Kudüs'te tarihi vakıflar inşa et.</p>
+                    </div>
+                    <span id="built-count-badge" class="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/30">0 / 4 Vakıf Kuruldu</span>
+                </div>
+                <div id="buildings-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
+            </div>
+        </div>
+
+        <!-- Mod 3: Arşiv -->
+        <div id="panel-terms" class="hidden flex-col gap-4">
+            <div class="stone-card rounded-2xl p-5">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <h2 class="font-cinzel text-base font-bold text-amber-300">KUDÜS TARİH VE VAKIF ARŞİVİ</h2>
+                    <span class="text-xs text-emerald-300 bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-500/30">Her Belge +15 Hafıza</span>
+                </div>
+                <p class="text-xs text-stone-400 mb-4">Arşiv belgelerini inceleyerek hafıza kaynağını güçlendir.</p>
+
+                <div id="terms-list" class="space-y-3 mb-6"></div>
+
+                <h3 class="font-cinzel text-sm font-bold text-amber-300 mb-3 pt-4 border-t border-amber-500/20">İsimlendirme Savaşı: İşgal Diline Karşı Hakikat</h3>
+                <div class="space-y-3" id="naming-comparison-list"></div>
+            </div>
+        </div>
+
+        <!-- Mod 4: Sancaklar -->
+        <div id="panel-leagues" class="hidden flex-col gap-4">
+            <div class="stone-card rounded-2xl p-5">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h2 class="font-cinzel text-base font-bold text-amber-300">KUDÜS MUHAFIZ SANCAKLARI</h2>
+                        <p class="text-xs text-stone-400 mt-0.5">Tarihi muhafız birliklerinin ortak ilerleme tablosu.</p>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-500/40">Sezon 1 Aktif</span>
+                </div>
+
+                <div class="p-3.5 rounded-xl parchment-box mb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-xs">
+                        <span class="text-stone-400">Bağlı Olduğun Sancak:</span>
+                        <strong id="selected-guild-name" class="text-amber-300 ml-1">Hıttin Muhafız Birliği</strong>
+                    </div>
+                    <select onchange="changeGuild(this.value)" class="bg-stone-950 border border-amber-500/30 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-400">
+                        <option value="Hıttin Muhafız Birliği">Hıttin Muhafız Birliği</option>
+                        <option value="Şam Kapısı Nöbetçileri">Şam Kapısı Nöbetçileri</option>
+                        <option value="Zeytin Dağı Sancağı">Zeytin Dağı Sancağı</option>
+                        <option value="Babü'r-Rahme Halkası">Babü'r-Rahme Halkası</option>
+                    </select>
+                </div>
+                <div class="space-y-2.5" id="leaderboard-list"></div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Ödül Modalı -->
+<div id="reward-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md p-3 sm:p-6">
+    <div class="relative w-full max-w-4xl rounded-3xl overflow-hidden border border-amber-500/50 shadow-2xl bg-slate-950">
+        <div class="relative z-20 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/70 to-transparent">
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40">✨ 180. Gün Finali: Mescid-i Aksa Seher Buluşması</span>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleAmbientSound()" id="sound-toggle-btn" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/25 transition cursor-pointer">🔊 Seher Atmosferini Başlat</button>
+                <button onclick="closeRewardModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-500/40 text-white flex items-center justify-center transition cursor-pointer">✕</button>
+            </div>
+        </div>
+
+        <div class="relative z-10 px-6 pb-8 pt-2 flex flex-col items-center text-center min-h-[430px] justify-between">
+            <div class="w-full flex justify-between px-8 opacity-80 pointer-events-none">
+                <span class="star text-amber-200 text-xs">✦</span>
+                <span class="text-amber-300 text-2xl">🌙</span>
+                <span class="star text-amber-200 text-sm" style="animation-delay: 1s;">✦</span>
+            </div>
+
+            <div class="my-4 w-full max-w-lg mx-auto">
+                <svg viewBox="0 0 500 210" class="w-full h-auto drop-shadow-2xl">
+                    <circle cx="250" cy="85" r="75" fill="rgba(251, 191, 36, 0.14)"/>
+                    <path d="M 195 95 C 195 40, 305 40, 305 95 Z" fill="#f59e0b" stroke="#fef08a" stroke-width="1.5"/>
+                    <line x1="250" y1="30" x2="250" y2="53" stroke="#fef08a" stroke-width="2.5"/>
+                    <circle cx="250" cy="27" r="4" fill="none" stroke="#fef08a" stroke-width="2"/>
+                    <rect x="192" y="95" width="116" height="22" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1"/>
+                    <rect x="165" y="117" width="170" height="48" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+                    <path d="M 185 165 V 135 A 12 12 0 0 1 209 135 V 165 Z" fill="#1e293b"/>
+                    <path d="M 238 165 V 132 A 12 12 0 0 1 262 132 V 165 Z" fill="#fbbf24" opacity="0.85"/>
+                    <path d="M 291 165 V 135 A 12 12 0 0 1 315 135 V 165 Z" fill="#1e293b"/>
+                    <rect x="30" y="165" width="440" height="10" rx="3" fill="#334155"/>
+                    <circle cx="95" cy="148" r="16" fill="#065f46"/>
+                    <rect x="92" y="155" width="6" height="10" fill="#451a03"/>
+                    <circle cx="405" cy="148" r="16" fill="#065f46"/>
+                    <rect x="402" y="155" width="6" height="10" fill="#451a03"/>
+                </svg>
+            </div>
+
+            <div class="bg-stone-950/85 backdrop-blur-md border border-amber-500/40 rounded-2xl p-5 max-w-2xl w-full shadow-xl">
+                <div class="font-amiri text-2xl sm:text-3xl text-amber-300 mb-1">
+                    سُبْحَانَ الَّذِي أَسْرَىٰ بِعَبْدِهِ لَيْلًا مِنَ الْمَسْجِدِ الْحَرَامِ إِلَى الْمَسْجِدِ الْأَقْصَى
+                </div>
+                <p class="text-xs text-stone-300 italic mb-3">
+                    "Kulu Muhammed'i bir gece Mescid-i Haram'dan, çevresini mübarek kıldığımız Mescid-i Aksa'ya götüren Allah noksan sıfatlardan münezzehtir." (İsrâ, 1)
+                </p>
+                <div class="border-t border-stone-800 pt-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-left">
+                        <div class="text-xs text-emerald-400 font-bold">ELHAMDÜLİLLAH, KUDÜS SEFERİ TAMAMLANDI</div>
+                        <p class="text-xs text-stone-300 mt-0.5">Seher vaktinde Mescid-i Aksa'nın avlusunda, zeytin ağaçlarının gölgesindesin.</p>
+                    </div>
+                    <button onclick="downloadCertificate()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shrink-0 transition cursor-pointer shadow-lg">
+                        📜 Kudüs Muhafızı Beratını Al
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let state = {
+        spirit: 30,
+        lore: 25,
+        defense: 30,
+        currentDay: 1,
+        maxDays: 180,
+        currentSeason: 1,
+        selectedZoneIndex: 0,
+        unlockedZones: [0],
+        zoneDefense: [100, 40, 30, 20, 15],
+        readTerms: [],
+        builtStructures: [],
+        currentScenarioIndex: 0,
+        userGuild: "Hıttin Muhafız Birliği",
+        soundPlaying: false
+    };
+
+    const structuresData = [
+        {
+            id: "medrese-salahiyye",
+            name: "Salahiyye Vakıf Medresesi",
+            era: "Eyyubi Mirası",
+            desc: "Kudüs'ün ilmi hafızasını diri tutan medreseyi ihya et. Her gün +5 Hafıza kazandırır.",
+            cost: { spirit: 15, lore: 15, defense: 0 },
+            rewardDays: 15,
+            bonusText: "+15 Gün Sefer İlerlemesi • Vakıf Geliri Aktif"
+        },
+        {
+            id: "kanuni-surlari",
+            name: "Kanuni Sur Burçları Tahkimatı",
+            era: "Osmanlı Savunması",
+            desc: "Eski Şehir surlarını ve Şam Kapısı burçlarını güçlendirerek savunmayı artır.",
+            cost: { spirit: 0, lore: 15, defense: 20 },
+            rewardDays: 20,
+            bonusText: "+20 Gün Sefer İlerlemesi • Tüm Bölgelere Savunma"
+        },
+        {
+            id: "osmanli-tapu-arsivi",
+            name: "Hazine-i Hassa Tapu Kalkanı",
+            era: "Sultan II. Abdülhamid Stratejisi",
+            desc: "Şeyh Cerrah mahallelerinin Osmanlı vakıf tapularını dijital arşivle mühürle.",
+            cost: { spirit: 10, lore: 25, defense: 15 },
+            rewardDays: 25,
+            bonusText: "+25 Gün Sefer İlerlemesi • Hukuki Zırh Aktif"
+        },
+        {
             id: "murabit-ilim-halkasi",
             name: "Mescid-i Aksa Seher İlim Halkası",
             era: "Sivil Direniş & Nöbet",
-            desc: "Kıble Mescidi ve Kubbetü's-Sahre avlusunda kesintisiz sabah namazı ve ilim halkası kur.",
+            desc: "Kıble Mescidi avlusunda kesintisiz sabah namazı ve ilim halkası kur.",
             cost: { spirit: 30, lore: 15, defense: 15 },
             rewardDays: 30,
             bonusText: "+30 Gün Sefer İlerlemesi • Nihai Seher Kapısını Aç"
         }
     ];
 
-    // --- 6 ÇAĞ / SEZON VERİSİ ---
     const seasonsData = [
-        { id: 1, title: "1. Çağ: Surlar ve Kapılar", startDay: 1, endDay: 30 },
-        { id: 2, title: "2. Çağ: Eyyubi İhyası", startDay: 31, endDay: 60 },
-        { id: 3, title: "3. Çağ: Osmanlı Emaneti", startDay: 61, endDay: 90 },
-        { id: 4, title: "4. Çağ: Tapu ve Hukuk", startDay: 91, endDay: 120 },
-        { id: 5, title: "5. Çağ: Murabit Nöbeti", startDay: 121, endDay: 150 },
-        { id: 6, title: "6. Çağ: Seher Buluşması", startDay: 151, endDay: 180 }
+        { id: 1, title: "1. Çağ: Surlar", startDay: 1, endDay: 30 },
+        { id: 2, title: "2. Çağ: Eyyubi", startDay: 31, endDay: 60 },
+        { id: 3, title: "3. Çağ: Osmanlı", startDay: 61, endDay: 90 },
+        { id: 4, title: "4. Çağ: Tapu", startDay: 91, endDay: 120 },
+        { id: 5, title: "5. Çağ: Murabit", startDay: 121, endDay: 150 },
+        { id: 6, title: "6. Çağ: Seher", startDay: 151, endDay: 180 }
     ];
 
-    // --- HARİTA BÖLGELERİ ---
     const mapZones = [
-        { tag: "Bölge 1 • Osmanlı Surları (1537)", name: "Şam Kapısı (Babü'l-Amud)", desc: "Kanuni Sultan Süleyman'ın inşa ettirdiği en görkemli sur kapısı. Kudüs'ün kalbine açılan ana giriş." },
+        { tag: "Bölge 1 • Osmanlı Surları (1537)", name: "Şam Kapısı (Babü'l-Amud)", desc: "Kanuni Sultan Süleyman'ın inşa ettirdiği en görkemli sur kapısı." },
         { tag: "Bölge 2 • Kudüs Kuzey Hattı", name: "Şeyh Cerrah Mahallesi", desc: "Osmanlı vakıf arazileri ve tarihi evleriyle Kudüs'ün hukuki direniş hattı." },
-        { tag: "Bölge 3 • Güney Surları", name: "Meğaribe Vakfı & Burak Duvarı", desc: "Salahaddin Eyyubi vakfı olan ve asırlardır İslam hafızasında yer eden kutsal mahalle." },
-        { tag: "Bölge 4 • Harem-i Şerif Güney", name: "Kıble Mescidi", desc: "Hz. Ömer'den bu yana cemaatle dolup taşan, Mescid-i Aksa'nın ana ibadethane merkezi." },
-        { tag: "Bölge 5 • Harem-i Şerif Kalbi", name: "Kubbetü's-Sahre & Mübarek Kaya", desc: "Miracın başladığı kutlu Muallak Taşının bulunduğu İslam Mimarisi şaheseri." }
+        { tag: "Bölge 3 • Güney Surları", name: "Meğaribe Vakfı & Burak Duvarı", desc: "Salahaddin Eyyubi vakfı olan mukaddes mahalle." },
+        { tag: "Bölge 4 • Harem-i Şerif Güney", name: "Kıble Mescidi", desc: "Hz. Ömer'den bu yana cemaatle dolup taşan ana ibadethane." },
+        { tag: "Bölge 5 • Harem-i Şerif Kalbi", name: "Kubbetü's-Sahre", desc: "Miracın başladığı kutlu Muallak Taşının bulunduğu mimari şaheser." }
     ];
 
-    // --- TARİHİ FERMANLAR VE KRİZ SENARYOLARI ---
     const scenariosData = [
         {
             year: "1516",
             era: "Osmanlı Dönemi • Emanet",
             title: "Yavuz Sultan Selim'in Kudüs'e Girişi",
-            story: "Osmanlı ordusu Kudüs kapılarına dayandığında, şehir anahtarları kan dökülmeden teslim alınır. Şehrin alimleri ve kadısı Sultan Selim'i 'Hâdimü'l-Haremeyn' unvanıyla karşılar. Bu tarihi kavşakta ilk kararınız ne olacaktır?",
+            story: "Osmanlı ordusu Kudüs kapılarına dayandığında anahtarlar kan dökülmeden teslim alınır. İlk kararınız nedir?",
             choices: [
-                {
-                    text: "Şehrin idaresini yerel vakıflara ve şeri hukuka bırak, medreseleri onar.",
-                    effectText: "Doğru karar! Kudüs'ün ilmi hafızası güçlendi.",
-                    rewards: { spirit: +15, lore: +20, defense: +10, days: +10 }
-                },
-                {
-                    text: "Sadece askeri kaleleri tahkim et, iç siyasete karışma.",
-                    effectText: "Savunma arttı ancak manevi bağlar zayıf kaldı.",
-                    rewards: { spirit: +5, lore: +5, defense: +20, days: +5 }
-                }
+                { text: "Şehrin idaresini vakıflara bırak, medreseleri onar.", effectText: "Kudüs'ün ilmi hafızası güçlendi!", rewards: { spirit: +15, lore: +20, defense: +10, days: +10 } },
+                { text: "Sadece askeri kaleleri tahkim et.", effectText: "Savunma arttı.", rewards: { spirit: +5, lore: +5, defense: +20, days: +5 } }
             ]
         },
         {
             year: "1876",
-            era: "Osmanlı İdaresi • Hazine-i Hassa",
+            era: "Osmanlı İdaresi",
             title: "Sultan II. Abdülhamid'in Tapu Hamlesi",
-            story: "Avrupalı fonların ve gayrimenkul şirketlerinin Kudüs arazilerini toplamak için diplomatik baskı yaptığı dönemde, Saray'dan özel bir ferman gelir: 'Kudüs toprakları satılamaz, Hazine-i Hassa adına tescillenecektir.'",
+            story: "Kudüs arazilerini toplamak isteyenlere karşı ferman gelir: 'Topraklar satılamaz, Hazine-i Hassa adına tescillenecektir.'",
             choices: [
-                {
-                    text: "Tüm tapu kayıtlarını Osmanlı arşivlerinde muhafaza et ve mahalleleri koru.",
-                    effectText: "Tarihi hafıza mühürlendi! Hukuki zırh başarıyla kuruldu.",
-                    rewards: { spirit: +10, lore: +25, defense: +15, days: +15 }
-                },
-                {
-                    text: "Sadece ticari merkezleri koruma altına al, diğer bölgeleri akışına bırak.",
-                    effectText: "Eksik koruma nedeniyle bazı bölgeler savunmasız kaldı.",
-                    rewards: { spirit: +0, lore: +10, defense: +5, days: +5 }
-                }
+                { text: "Tüm tapu kayıtlarını Osmanlı arşivlerinde muhafaza et.", effectText: "Hukuki zırh başarıyla kuruldu!", rewards: { spirit: +10, lore: +25, defense: +15, days: +15 } },
+                { text: "Sadece ticari merkezleri koruma altına al.", effectText: "Bazı bölgeler savunmasız kaldı.", rewards: { spirit: +0, lore: +10, defense: +5, days: +5 } }
             ]
         },
         {
             year: "1969",
-            era: "Direniş & Sabır Dönemi",
-            title: "Kıble Mescidi Yangını ve Halkın Direnişi",
-            story: "Kıble Mescidi'nde çıkarılan menfur yangın sonrasında Kudüslü hanımlar, gençler ve yaşlılar su kitaleriyle, elleriyle alevlere karşı durur. Mescidi korumak için seher vakti nöbetçiler çağrılmaktadır.",
+            era: "Direniş Dönemi",
+            title: "Kıble Mescidi Yangını",
+            story: "Kıble Mescidi yangını sonrasında Kudüslü hanımlar ve gençler alevlere karşı durur. Seher vakti nöbetçiler çağrılmaktadır.",
             choices: [
-                {
-                    text: "Hemen 'Murabit' halkaları kurarak Mescid-i Aksa'nın kapılarında nöbet tutmaya başla.",
-                    effectText: "Maneviyat zirve yaptı! Halk bilinci ve direniş kalkanı kenetlendi.",
-                    rewards: { spirit: +25, lore: +15, defense: +20, days: +20 }
-                },
-                {
-                    text: "Sadece uluslararası kınama mesajları yayınla, sahaya inme.",
-                    effectText: "Pasif tutum maneviyatı ve direniş gücünü zayıflattı.",
-                    rewards: { spirit: -10, lore: +5, defense: -5, days: +5 }
-                }
+                { text: "Murabit halkaları kurarak Aksa kapılarında nöbet tutmaya başla.", effectText: "Halk bilinci ve direniş kenetlendi!", rewards: { spirit: +25, lore: +15, defense: +20, days: +20 } },
+                { text: "Sadece uluslararası kınama yayınla.", effectText: "Maneviyat zayıf kaldı.", rewards: { spirit: -10, lore: +5, defense: -5, days: +5 } }
             ]
         },
         {
             year: "2021",
             era: "Şeyh Cerrah Nöbeti",
-            title: "Mahallelerin Tahliye Tehdidi ve Hukuki Mücadele",
-            story: "Şeyh Cerrah mahallesindeki aileler evlerinden çıkarılmakla yüzyüzedir. Dünyanın dört bir yanından gelen aktivistler ve yerel halk ortak ses yükseltir.",
+            title: "Mahallelerin Tahliye Tehdidi",
+            story: "Şeyh Cerrah mahallesindeki aileler tahliye tehdidi altındadır.",
             choices: [
-                {
-                    text: "Osmanlı tapu belgelerini uluslararası mahkemelere ve basına taşı.",
-                    effectText: "Hafıza kaynağı katlanarak arttı, adalet sesi duyuruldu.",
-                    rewards: { spirit: +15, lore: +30, defense: +25, days: +20 }
-                },
-                {
-                    text: "Sadece bireysel taşınma yardımı teklif et.",
-                    effectText: "Mahalle direnişi zayıfladı.",
-                    rewards: { spirit: -5, lore: +5, defense: -10, days: +5 }
-                }
+                { text: "Osmanlı tapu belgelerini uluslararası mahkemelere taşı.", effectText: "Adalet sesi duyuruldu!", rewards: { spirit: +15, lore: +30, defense: +25, days: +20 } },
+                { text: "Bireysel taşınma yardımı teklif et.", effectText: "Direniş zayıfladı.", rewards: { spirit: -5, lore: +5, defense: -10, days: +5 } }
             ]
         },
         {
             year: "2026",
             era: "180. Gün • Seher Buluşması",
-            title: "Kudüs Seferinin Zirvesi ve Özgürlük Ufku",
-            story: "180 günlük tarih, ilim, strateji ve maneviyat seferinin son günündesin. Mescid-i Aksa'nın avlusunda ezan sesleri yankılanırken son iradeyi ortaya koyma vakti.",
+            title: "Kudüs Seferinin Zirvesi",
+            story: "180 günlük tarih ve ilim seferinin son günündesin. Mescid-i Aksa avlusunda ezanlar yankılanıyor.",
             choices: [
-                {
-                    text: "Seher vaktinde tüm muhafızlarla birlikte Aksa avlusunda saf tut ve beratını al.",
-                    effectText: "Elhamdülillah! Kudüs Seferi başarıyla tamamlandı.",
-                    rewards: { spirit: +30, lore: +30, defense: +30, days: +30 }
-                }
+                { text: "Seher vaktinde tüm muhafızlarla birlikte Aksa avlusunda saf tut.", effectText: "Kudüs Seferi başarıyla tamamlandı!", rewards: { spirit: +30, lore: +30, defense: +30, days: +30 } }
             ]
         }
     ];
 
-    // --- KUDÜS ARŞİVİ (BELGELER) ---
     const archiveTerms = [
-        { title: "Nâdiyü'l-Mescid (Mescid Halkası)", desc: "Mescid-i Aksa'nın ilim, irfan ve Kur'an halkalarıyla sürekli diri tutulması geleneği." },
-        { title: "Hazine-i Hassa Tapuları", desc: "Sultan II. Abdülhamid Han'ın Kudüs topraklarını şahsi mülkiyetine alarak tapu devirlerini engellediği tarihi koruma kalkanı." },
-        { title: "Eyyubi Vakfiyesi", desc: "Salahaddin Eyyubi'nin Kudüs'ü fethinden sonra kurduğu ve mahalleleri mukaddes kılan vakıf sitemi." },
-        { title: "Murabitun / Murabitat", desc: "Mescid-i Aksa'yı nöbetleşe koruyan, ilim ve ibadetle makamı muhafaza eden gönüllüler topluluğu." }
+        { title: "Nâdiyü'l-Mescid", desc: "Mescid-i Aksa'nın ilim ve irfan halkalarıyla sürekli diri tutulması." },
+        { title: "Hazine-i Hassa Tapuları", desc: "Sultan II. Abdülhamid Han'ın Kudüs topraklarını koruma kalkanı." },
+        { title: "Eyyubi Vakfiyesi", desc: "Salahaddin Eyyubi'nin Kudüs fethi sonrası kurduğu vakıf sistemi." },
+        { title: "Murabitun", desc: "Mescid-i Aksa'yı ilim ve ibadetle koruyan gönüllüler." }
     ];
 
     const namingComparisons = [
-        { wrong: "Haremü'l-Hakim / Tapınak Dağı", correct: "Harem-i Şerif & Mescid-i Aksa (144 dönümlük mukaddes mabed kompleksi)" },
-        { wrong: "Doğu Kudüs", correct: "Kudüs-ü Şerif (Tarihi Surlar İçi ve İslam Mirasının Kalbi)" },
-        { wrong: "Ağlama Duvarı", correct: "Burak Duvarı (Hz. Muhammed'in Miraç gecesi Burak'ı bağladığı meşânik duvarı)" }
+        { wrong: "Haremü'l-Hakim / Tapınak Dağı", correct: "Harem-i Şerif & Mescid-i Aksa" },
+        { wrong: "Doğu Kudüs", correct: "Kudüs-ü Şerif" },
+        { wrong: "Ağlama Duvarı", correct: "Burak Duvarı" }
     ];
 
-    // --- TONE.JS SES MOTORU ---
     let synth, ambientLoop;
     function initAudio() {
         if (!synth) {
@@ -150,17 +558,12 @@
             Tone.start();
             state.soundPlaying = true;
             btn.innerText = "🔇 Sesi Kapat";
-            btn.classList.replace("bg-white/10", "bg-amber-500/30");
-            btn.classList.add("border-amber-400");
-            
-            // Huzurlu Seher Melodisi (Nihavend / Huzur makamı frekansları)
             const notes = ["C4", "E4", "G4", "B4", "C5", "G4", "E4"];
             let index = 0;
             ambientLoop = new Tone.Loop(time => {
                 synth.triggerAttackRelease(notes[index], "2n", time);
                 index = (index + 1) % notes.length;
             }, "2n").start(0);
-            
             Tone.Transport.start();
             showToast("✨ Seher vakti manevi atmosfer sesi başlatıldı.", "success");
         } else {
@@ -168,13 +571,10 @@
             Tone.Transport.stop();
             if (ambientLoop) ambientLoop.stop();
             btn.innerText = "🔊 Seher Atmosferini Başlat";
-            btn.classList.replace("bg-amber-500/30", "bg-white/10");
-            btn.classList.remove("border-amber-400");
             showToast("Ses kapatıldı.", "info");
         }
     }
 
-    // --- OYUN FONKSİYONLARI ---
     function showToast(message, type = "success") {
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
@@ -182,8 +582,7 @@
         toast.className = `px-4 py-2.5 rounded-xl border ${bgColor} text-xs font-bold shadow-2xl backdrop-blur-md transition-all duration-300 translate-y-2 opacity-0`;
         toast.innerText = message;
         container.appendChild(toast);
-        
-        setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+        setTimeout(() => toast.classList.remove("translate-y-2", "opacity-0"), 50);
         setTimeout(() => {
             toast.classList.add("translate-y-2", "opacity-0");
             setTimeout(() => toast.remove(), 300);
@@ -198,12 +597,10 @@
         const pct = Math.min(100, Math.floor((state.currentDay / state.maxDays) * 100));
         document.getElementById("header-progress-text").innerText = `Gün ${state.currentDay} / ${state.maxDays} (%${pct})`;
         
-        // Sezon / Çağ Belirleme
         let currentSeasonObj = seasonsData.find(s => state.currentDay >= s.startDay && state.currentDay <= s.endDay) || seasonsData[5];
         state.currentSeason = currentSeasonObj.id;
         document.getElementById("header-season-label").innerText = currentSeasonObj.title;
 
-        // Rütbe Güncelleme
         let rankBadge = document.getElementById("user-rank-badge");
         if (state.currentDay < 30) rankBadge.innerText = "Aksa Talebesi";
         else if (state.currentDay < 60) rankBadge.innerText = "Eyyubi Nöbetçisi";
@@ -219,7 +616,6 @@
         renderTermsPanel();
         renderLeaderboard();
 
-        // 180. Güne Ulaşıldıysa Otomatik Ödül Modalı
         if (state.currentDay >= 180) {
             document.getElementById("header-reward-btn").classList.remove("hidden");
         }
@@ -232,7 +628,6 @@
             let isActive = state.currentSeason === season.id;
             let isPassed = state.currentDay > season.endDay;
             let bgClass = isActive ? "bg-amber-500 text-stone-950 font-bold border-amber-400 shadow-lg" : (isPassed ? "bg-emerald-950/70 text-emerald-300 border-emerald-600/40" : "bg-stone-900/60 text-stone-400 border-stone-800");
-            
             bar.innerHTML += `
                 <div class="px-3 py-1.5 rounded-xl border text-[11px] flex items-center gap-2 ${bgClass} shrink-0">
                     <span>${isActive ? '⏳' : (isPassed ? '✓' : '🔒')}</span>
@@ -248,7 +643,6 @@
         document.getElementById("zone-tag").innerText = zone.tag;
         document.getElementById("zone-name").innerText = zone.name;
         document.getElementById("zone-desc").innerText = zone.desc;
-        
         let defPct = state.zoneDefense[index];
         document.getElementById("zone-defense-pct").innerText = `%${defPct}`;
         document.getElementById("zone-defense-bar").style.width = `${defPct}%`;
@@ -269,7 +663,7 @@
 
     function fortifySelectedZone() {
         if (state.defense < 10) {
-            showToast("Yetersiz Direniş Kaynağı! Arşiv belgelerini inceleyerek hafıza ve direniş topla.", "error");
+            showToast("Yetersiz Direniş Kaynağı!", "error");
             return;
         }
         state.defense -= 10;
@@ -328,7 +722,7 @@
 
         let outcomeBox = document.getElementById("scenario-outcome");
         outcomeBox.className = "mt-5 p-4 rounded-xl border text-xs leading-relaxed bg-emerald-950/40 border-emerald-500/40 text-emerald-200";
-        outcomeBox.innerHTML = `<strong>Tarihsel Netice:</strong> ${choice.effectText} <br><span class="text-amber-300 mt-1 block">✨ Kaynaklar güncellendi (+ Maneviyat, + Hafıza, + Direniş, +${choice.rewards.days} Gün Sefer).</span>`;
+        outcomeBox.innerHTML = `<strong>Tarihsel Netice:</strong> ${choice.effectText} <br><span class="text-amber-300 mt-1 block">✨ Kaynaklar güncellendi (+${choice.rewards.days} Gün Sefer).</span>`;
         outcomeBox.classList.remove("hidden");
 
         setTimeout(() => {
@@ -336,7 +730,7 @@
                 state.currentScenarioIndex++;
                 updateHUD();
             } else {
-                showToast("Tüm tarihi ferman görevleri tamamlandı! Seher vaktine hazırsın.", "success");
+                showToast("Tüm tarihi ferman görevleri tamamlandı!", "success");
             }
         }, 3000);
     }
@@ -372,7 +766,7 @@
 
     function buildStructure(id, rewardDays, reqSpirit, reqLore, reqDefense) {
         if (state.spirit < reqSpirit || state.lore < reqLore || state.defense < reqDefense) {
-            showToast("Yetersiz kaynak! Arşiv belgelerini oku veya ferman kararları ver.", "error");
+            showToast("Yetersiz kaynak!", "error");
             return;
         }
         state.spirit -= reqSpirit;
@@ -380,7 +774,7 @@
         state.defense -= reqDefense;
         state.currentDay = Math.min(180, state.currentDay + rewardDays);
         state.builtStructures.push(id);
-        showToast("Vakıf başarıyla inşa edildi ve ihya edildi!", "success");
+        showToast("Vakıf başarıyla inşa edildi!", "success");
         updateHUD();
     }
 
@@ -405,7 +799,7 @@
         namingComparisons.forEach(item => {
             namingList.innerHTML += `
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] p-3 rounded-xl bg-black/40 border border-stone-800">
-                    <div class="text-red-400">❌ <strong>İşgal / Yanlış Dil:</strong> ${item.wrong}</div>
+                    <div class="text-red-400">❌ <strong>Yanlış Dil:</strong> ${item.wrong}</div>
                     <div class="text-emerald-300">✅ <strong>Kudüs Hakikati:</strong> ${item.correct}</div>
                 </div>
             `;
@@ -473,8 +867,9 @@
         showToast("📜 Kudüs Muhafızı Beratınız başarıyla indirildi!", "success");
     }
 
-    // İlk yükleme
     window.onload = function() {
         updateHUD();
     };
 </script>
+</body>
+</html>
